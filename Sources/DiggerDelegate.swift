@@ -14,7 +14,12 @@ public class DiggerDelegate:NSObject{
 
 
 // MARK:-  SessionDelegate
-extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
+
+extension DiggerDelegate: URLSessionDownloadDelegate {
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        diggerLog("didFinishDownloadingTo: session: \(String(describing: session)) downloadTask: \(downloadTask) location: \(location)")
+    }
+    
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         diggerLog("didWriteData: session: \(String(describing: session)) downloadTask: \(downloadTask) totalBytesWritten: \(totalBytesWritten) totalBytesExpectedToWrite: \(totalBytesExpectedToWrite)")
         
@@ -37,6 +42,9 @@ extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
             return
         }
     }
+}
+
+extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
     
     
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
