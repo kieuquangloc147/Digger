@@ -81,12 +81,12 @@ extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
         
         
         // rangeString    String    "bytes 9660646-72300329/72300330"
-        if let totalBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").last?.components(separatedBy: "/").last ,
+        if let totalBytesString = responseHeaders["content-range"]?.components(separatedBy: "-").last?.components(separatedBy: "/").last ,
             let totalBytes = Int64(totalBytesString)  {
             diggerSeed.progress.totalUnitCount = totalBytes
         }
 
-        if let completedBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").first?.components(separatedBy: " ").last ,
+        if let completedBytesString = responseHeaders["content-range"]?.components(separatedBy: "-").first?.components(separatedBy: " ").last ,
             let completedBytes = Int64(completedBytesString)  {
 
             diggerSeed.progress.completedUnitCount = completedBytes
