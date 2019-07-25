@@ -27,6 +27,15 @@ extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
         
         diggerSeed.progress.completedUnitCount = totalBytesExpectedToWrite
         
+        if  diggerSeed.progress.totalUnitCount >= DiggerCache.systemFreeSize(){
+            
+            let errorInfo = ["diskOutOfSpace,check systemFreeSize ":url]
+            let error = NSError(domain: DiggerErrorDomain, code: DiggerError.diskOutOfSpace.rawValue, userInfo: errorInfo)
+            
+            notifyCompletionCallback(Result.failure(error), diggerSeed)
+            
+            return
+        }
     }
     
     
@@ -64,28 +73,28 @@ extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
         
         
         // rangeString    String    "bytes 9660646-72300329/72300330"
-        if let totalBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").last?.components(separatedBy: "/").last ,
-            let totalBytes = Int64(totalBytesString)  {
-            diggerSeed.progress.totalUnitCount = totalBytes
-        }
+//        if let totalBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").last?.components(separatedBy: "/").last ,
+//            let totalBytes = Int64(totalBytesString)  {
+//            diggerSeed.progress.totalUnitCount = totalBytes
+//        }
+//
+//        if let completedBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").first?.components(separatedBy: " ").last ,
+//            let completedBytes = Int64(completedBytesString)  {
+//
+//            diggerSeed.progress.completedUnitCount = completedBytes
+//        }
         
-        if let completedBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").first?.components(separatedBy: " ").last ,
-            let completedBytes = Int64(completedBytesString)  {
-            
-            diggerSeed.progress.completedUnitCount = completedBytes
-        }
         
         
-        
-        if  diggerSeed.progress.totalUnitCount >= DiggerCache.systemFreeSize(){
-            
-            let errorInfo = ["diskOutOfSpace,check systemFreeSize ":url]
-            let error = NSError(domain: DiggerErrorDomain, code: DiggerError.diskOutOfSpace.rawValue, userInfo: errorInfo)
-            
-            notifyCompletionCallback(Result.failure(error), diggerSeed)
-            
-            return
-        }
+//        if  diggerSeed.progress.totalUnitCount >= DiggerCache.systemFreeSize(){
+//
+//            let errorInfo = ["diskOutOfSpace,check systemFreeSize ":url]
+//            let error = NSError(domain: DiggerErrorDomain, code: DiggerError.diskOutOfSpace.rawValue, userInfo: errorInfo)
+//
+//            notifyCompletionCallback(Result.failure(error), diggerSeed)
+//
+//            return
+//        }
         
         
         if diggerSeed.progress.fractionCompleted > 1.0 { // file error
