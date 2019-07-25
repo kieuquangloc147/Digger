@@ -15,6 +15,21 @@ public class DiggerDelegate:NSObject{
 
 // MARK:-  SessionDelegate
 extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        diggerLog("didWriteData: session: \(String(describing: session)) downloadTask: \(downloadTask) totalBytesWritten: \(totalBytesWritten) totalBytesExpectedToWrite: \(totalBytesExpectedToWrite)")
+        
+        guard let manager = self.manager else { return  }
+        guard let url = downloadTask.originalRequest?.url,  let diggerSeed = manager.findDiggerSeed(with: url)  else {
+            return
+        }
+        
+        diggerSeed.progress.totalUnitCount = totalBytesWritten
+        
+        diggerSeed.progress.completedUnitCount = totalBytesExpectedToWrite
+        
+    }
+    
+    
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
         
         guard let manager = self.manager else { return  }
@@ -42,7 +57,7 @@ extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
             
             return
         }
-
+        
         guard let responseHeaders = (response as? HTTPURLResponse)?.allHeaderFields as? [String:String] else {
             return
         }
@@ -162,7 +177,7 @@ extension DiggerDelegate {
         
         DispatchQueue.main.safeAsync {
             _ = diggerSeed.callbacks.map{ $0.progress?(diggerSeed.progress) }
-
+            
         }
         
     }
@@ -192,7 +207,7 @@ extension DiggerDelegate {
         }
         
         manager.removeDigeerSeed(for: diggerSeed.url)
-
+        
         DispatchQueue.main.safeAsync {
             _ = diggerSeed.callbacks.map{ $0.completion?(result) }
         }
@@ -248,7 +263,7 @@ extension DiggerDelegate {
     public func notifySpeedZeroCallback(_ diggerSeed : DiggerSeed){
         DispatchQueue.main.safeAsync {
             _ = diggerSeed.callbacks.map{ $0.speed?(0) }
-
+            
         }
     }
     
