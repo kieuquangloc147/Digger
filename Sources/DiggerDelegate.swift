@@ -15,34 +15,34 @@ public class DiggerDelegate:NSObject{
 
 // MARK:-  SessionDelegate
 
-extension DiggerDelegate: URLSessionDownloadDelegate {
-    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        diggerLog("didFinishDownloadingTo: session: \(String(describing: session)) downloadTask: \(downloadTask) location: \(location)")
-    }
-    
-    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        diggerLog("didWriteData: session: \(String(describing: session)) downloadTask: \(downloadTask) totalBytesWritten: \(totalBytesWritten) totalBytesExpectedToWrite: \(totalBytesExpectedToWrite)")
-        
-        guard let manager = self.manager else { return  }
-        guard let url = downloadTask.originalRequest?.url,  let diggerSeed = manager.findDiggerSeed(with: url)  else {
-            return
-        }
-        
-        diggerSeed.progress.totalUnitCount = totalBytesWritten
-        
-        diggerSeed.progress.completedUnitCount = totalBytesExpectedToWrite
-        
-        if  diggerSeed.progress.totalUnitCount >= DiggerCache.systemFreeSize(){
-            
-            let errorInfo = ["diskOutOfSpace,check systemFreeSize ":url]
-            let error = NSError(domain: DiggerErrorDomain, code: DiggerError.diskOutOfSpace.rawValue, userInfo: errorInfo)
-            
-            notifyCompletionCallback(Result.failure(error), diggerSeed)
-            
-            return
-        }
-    }
-}
+//extension DiggerDelegate: URLSessionDownloadDelegate {
+//    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+//        diggerLog("didFinishDownloadingTo: session: \(String(describing: session)) downloadTask: \(downloadTask) location: \(location)")
+//    }
+//
+//    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+//        diggerLog("didWriteData: session: \(String(describing: session)) downloadTask: \(downloadTask) totalBytesWritten: \(totalBytesWritten) totalBytesExpectedToWrite: \(totalBytesExpectedToWrite)")
+//
+//        guard let manager = self.manager else { return  }
+//        guard let url = downloadTask.originalRequest?.url,  let diggerSeed = manager.findDiggerSeed(with: url)  else {
+//            return
+//        }
+//
+//        diggerSeed.progress.totalUnitCount = totalBytesWritten
+//
+//        diggerSeed.progress.completedUnitCount = totalBytesExpectedToWrite
+//
+//        if  diggerSeed.progress.totalUnitCount >= DiggerCache.systemFreeSize(){
+//
+//            let errorInfo = ["diskOutOfSpace,check systemFreeSize ":url]
+//            let error = NSError(domain: DiggerErrorDomain, code: DiggerError.diskOutOfSpace.rawValue, userInfo: errorInfo)
+//
+//            notifyCompletionCallback(Result.failure(error), diggerSeed)
+//
+//            return
+//        }
+//    }
+//}
 
 extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
     
@@ -81,28 +81,28 @@ extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
         
         
         // rangeString    String    "bytes 9660646-72300329/72300330"
-//        if let totalBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").last?.components(separatedBy: "/").last ,
-//            let totalBytes = Int64(totalBytesString)  {
-//            diggerSeed.progress.totalUnitCount = totalBytes
-//        }
-//
-//        if let completedBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").first?.components(separatedBy: " ").last ,
-//            let completedBytes = Int64(completedBytesString)  {
-//
-//            diggerSeed.progress.completedUnitCount = completedBytes
-//        }
+        if let totalBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").last?.components(separatedBy: "/").last ,
+            let totalBytes = Int64(totalBytesString)  {
+            diggerSeed.progress.totalUnitCount = totalBytes
+        }
+
+        if let completedBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").first?.components(separatedBy: " ").last ,
+            let completedBytes = Int64(completedBytesString)  {
+
+            diggerSeed.progress.completedUnitCount = completedBytes
+        }
         
         
         
-//        if  diggerSeed.progress.totalUnitCount >= DiggerCache.systemFreeSize(){
-//
-//            let errorInfo = ["diskOutOfSpace,check systemFreeSize ":url]
-//            let error = NSError(domain: DiggerErrorDomain, code: DiggerError.diskOutOfSpace.rawValue, userInfo: errorInfo)
-//
-//            notifyCompletionCallback(Result.failure(error), diggerSeed)
-//
-//            return
-//        }
+        if  diggerSeed.progress.totalUnitCount >= DiggerCache.systemFreeSize(){
+
+            let errorInfo = ["diskOutOfSpace,check systemFreeSize ":url]
+            let error = NSError(domain: DiggerErrorDomain, code: DiggerError.diskOutOfSpace.rawValue, userInfo: errorInfo)
+
+            notifyCompletionCallback(Result.failure(error), diggerSeed)
+
+            return
+        }
         
         
         if diggerSeed.progress.fractionCompleted > 1.0 { // file error
