@@ -84,14 +84,18 @@ extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
         if let totalBytesString = responseHeaders["content-range"]?.components(separatedBy: "-").last?.components(separatedBy: "/").last ,
             let totalBytes = Int64(totalBytesString)  {
             diggerSeed.progress.totalUnitCount = totalBytes
-        }
-
-        if let completedBytesString = responseHeaders["content-range"]?.components(separatedBy: "-").first?.components(separatedBy: " ").last ,
-            let completedBytes = Int64(completedBytesString)  {
-
-            diggerSeed.progress.completedUnitCount = completedBytes
+        } else if let totalBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").last?.components(separatedBy: "/").last ,
+            let totalBytes = Int64(totalBytesString)  {
+            diggerSeed.progress.totalUnitCount = totalBytes
         }
         
+        if let completedBytesString = responseHeaders["content-range"]?.components(separatedBy: "-").first?.components(separatedBy: " ").last ,
+            let completedBytes = Int64(completedBytesString)  {
+            diggerSeed.progress.completedUnitCount = completedBytes
+        } else if let completedBytesString = responseHeaders["Content-Range"]?.components(separatedBy: "-").first?.components(separatedBy: " ").last ,
+            let completedBytes = Int64(completedBytesString) {
+            diggerSeed.progress.completedUnitCount = completedBytes
+        }
         
         
         if  diggerSeed.progress.totalUnitCount >= DiggerCache.systemFreeSize(){
