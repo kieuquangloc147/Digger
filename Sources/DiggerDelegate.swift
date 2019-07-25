@@ -15,35 +15,6 @@ public class DiggerDelegate:NSObject{
 
 // MARK:-  SessionDelegate
 
-//extension DiggerDelegate: URLSessionDownloadDelegate {
-//    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-//        diggerLog("didFinishDownloadingTo: session: \(String(describing: session)) downloadTask: \(downloadTask) location: \(location)")
-//    }
-//
-//    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-//        diggerLog("didWriteData: session: \(String(describing: session)) downloadTask: \(downloadTask) totalBytesWritten: \(totalBytesWritten) totalBytesExpectedToWrite: \(totalBytesExpectedToWrite)")
-//
-//        guard let manager = self.manager else { return  }
-//        guard let url = downloadTask.originalRequest?.url,  let diggerSeed = manager.findDiggerSeed(with: url)  else {
-//            return
-//        }
-//
-//        diggerSeed.progress.totalUnitCount = totalBytesWritten
-//
-//        diggerSeed.progress.completedUnitCount = totalBytesExpectedToWrite
-//
-//        if  diggerSeed.progress.totalUnitCount >= DiggerCache.systemFreeSize(){
-//
-//            let errorInfo = ["diskOutOfSpace,check systemFreeSize ":url]
-//            let error = NSError(domain: DiggerErrorDomain, code: DiggerError.diskOutOfSpace.rawValue, userInfo: errorInfo)
-//
-//            notifyCompletionCallback(Result.failure(error), diggerSeed)
-//
-//            return
-//        }
-//    }
-//}
-
 extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
     
     
@@ -135,9 +106,6 @@ extension DiggerDelegate :URLSessionDataDelegate,URLSessionDelegate {
             completionHandler(.allow)
             
         }
-        
-        
-        
     }
     
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
