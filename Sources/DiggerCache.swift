@@ -13,7 +13,7 @@ public class DiggerCache {
     ///  In the sandbox cactes directory, custom your cache directory
     public static var cachesDirectory: String = digger {
         willSet {
-            createDirectory(atPath: newValue.cacheDir)
+            createDirectory(atPath: newValue.docDir)
         }
     }
 
@@ -24,7 +24,7 @@ public class DiggerCache {
 
     static func cachePath(url: URL ) -> String {
 
-        return  cachesDirectory.cacheDir + "/" + url.lastPathComponent
+        return  cachesDirectory.docDir + "/" + url.lastPathComponent
     }
 
     static func removeTempFile(with url: URL) {
@@ -43,16 +43,16 @@ public class DiggerCache {
     /// The size of the downloaded files
     public static func downloadedFilesSize() -> Int64 {
 
-        if !isFileExist(atPath: cachesDirectory.cacheDir) {
+        if !isFileExist(atPath: cachesDirectory.docDir) {
             return 0
         }
         do {
             var filesSize: Int64 = 0
 
-            let subpaths = try FileManager.default.subpathsOfDirectory(atPath: cachesDirectory.cacheDir)
+            let subpaths = try FileManager.default.subpathsOfDirectory(atPath: cachesDirectory.docDir)
 
             _ = subpaths.map {
-                let filepath = cachesDirectory.cacheDir + "/" + $0
+                let filepath = cachesDirectory.docDir + "/" + $0
                 filesSize += fileSize(filePath: filepath)
             }
             return filesSize
@@ -82,8 +82,8 @@ public class DiggerCache {
     /// delete all  temp files
     public static func cleanDownloadFiles() {
 
-        removeItem(atPath: cachesDirectory.cacheDir)
-        createDirectory(atPath: cachesDirectory.cacheDir)
+        removeItem(atPath: cachesDirectory.docDir)
+        createDirectory(atPath: cachesDirectory.docDir)
 
     }
 
@@ -92,10 +92,10 @@ public class DiggerCache {
 
         var paths = [String]()
         do {
-            let subpaths = try FileManager.default.subpathsOfDirectory(atPath: cachesDirectory.cacheDir)
+            let subpaths = try FileManager.default.subpathsOfDirectory(atPath: cachesDirectory.docDir)
 
             _ = subpaths.map {
-                let filepath = cachesDirectory.cacheDir + "/" + $0
+                let filepath = cachesDirectory.docDir + "/" + $0
                 paths.append(filepath)
             }
         } catch {
